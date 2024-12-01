@@ -1,10 +1,23 @@
 # 🎯 Screenium
 
-Screenium is like Selenium after discovering there's a whole world outside the browser. Find and click any text on your screen using OCR. That "Accept Cookies" popup for the millionth time? Banish it. That stubborn system dialog that won't go away? Click it. That game that needs grinding? Automate it.
+Screenium is like Selenium after discovering there's a whole world outside the browser. Find and click any text on your screen using OCR. That "Accept Cookies" popup for the millionth time? Banish it.
 
 <img src="demo.gif" width="600px" alt="Demo">
 
-## 🔍 Use Cases
+## 🔍 Installation
+
+```bash
+pip install screenium
+```
+
+or
+
+```bash
+uv add screenium
+```
+
+
+## ✨ Use Cases
 
 - **Auto-Accept Cookies**: Run a background task that automatically clicks "Accept Cookies" popups
 - **Meeting Assistant**: Auto-join video calls by detecting "Join Meeting" buttons and automatically enable/disable your camera/mic based on meeting names
@@ -21,7 +34,7 @@ from screenium import Text
 
 # Simple text matching
 text = Text("Login")  # Finds "Login" anywhere on screen
-text = Text("LOG")    # Matches "LOGIN", "LOGOUT", etc.
+text = Text("LOG")    # Matches the first of "LOGIN", "LOGOUT", etc.
 
 # Exact matching
 text = Text("Login", exact_match=True)  # Only matches "Login" exactly
