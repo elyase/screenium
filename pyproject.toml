@@ -1,0 +1,28 @@
+[project]
+name = "screenium"
+version = "0.1.0"
+description = "Like Selenium, but for your entire screen. Find and interact with text anywhere using OCR."
+readme = "README.md"
+authors = [
+    { name = "Yaser Martinez Palenzuela", email = "yaser.martinez@gmail.com" }
+]
+requires-python = ">=3.9"
+dependencies = [
+    "colour>=0.1.5",
+    "mss>=10.0.0",
+    "pyobjc-framework-vision>=10.3.1",
+    "pyobjc-framework-cocoa>=10.3.1",
+    "pyobjc-framework-applicationservices>=10.3.1",
+    "pytest>=8.3.3",
+    "pynput>=1.7.7",
+    "pillow>=11.0.0",
+    "numpy>=2.0.2",
+]
+license = {text = "MIT"}
+
+[project.scripts]
+screen-locator = "screen_locator:main"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
