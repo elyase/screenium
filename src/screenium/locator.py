@@ -1198,6 +1198,17 @@ class TextFinder:
                 result = result.copy()  # Create a copy to avoid modifying original
                 result["full_text"] = result["text"]
                 result["is_exact_match"] = current_text == search_text
+
+                # If this is a substring match, interpolate its coordinates
+                if not exact_match and len(search_text) < len(current_text):
+                    # Find where the substring starts in the original text
+                    start_idx = current_text.index(search_text)
+                    # Calculate width per character
+                    char_width = result["width"] / len(current_text)
+                    # Adjust x coordinate and width based on substring position
+                    result["x"] = result["x"] + (start_idx * char_width)
+                    result["width"] = len(search_text) * char_width
+
                 matches.append(result)
 
         return matches

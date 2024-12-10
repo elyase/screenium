@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from screenium.locator import Text
+from screenium.locator import Text, TextFinder
 
 
 @pytest.fixture(autouse=True)
@@ -317,3 +317,40 @@ def test_background_color_matching():
             ],
         )
         assert len(matches) == 0, f"{text} shouldn't match with {color} background"
+
+
+@pytest.mark.parametrize(
+    "ocr_result,search_text,expected_x",
+    [
+        # The OCR engine recognizes "Welcome to Center" but we want to find "to"
+        # Since "to" starts at index 8 (after "Welcome ") in a 150px wide text,
+        # Each character is roughly 150/17 ≈ 8.82px wide (17 chars including spaces)
+        # So "to" should start at approximately: 100 + (8 * 8.82) ≈ 170.59
+        (
+            {
+                "text": "Welcome to Center",
+                "x": 100,
+                "y": 200,
+                "width": 150,
+                "height": 30,
+                "confidence": 0.95,
+            },
+            "to",
+            170.6,  # Rounded for readability
+        )
+    ],
+)
+def test_substring_within_longer_text(ocr_result, search_text, expected_x):
+    """Test that when matching a substring, its coordinates are correctly interpolated."""
+    finder = TextFinder()
+    finder.results = [ocr_result]
+
+    text = Text(search_text, finder=finder)
+    matches = text.matches
+
+    assert len(matches) == 1, "Should find exactly one match"
+    match = matches[0]
+    assert search_text in match["text"], "Match should contain the search text"
+    assert match["x"] == pytest.approx(
+        expected_x, rel=0.01
+    ), "X coordinate should be approximately correct"
