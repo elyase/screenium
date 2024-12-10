@@ -461,18 +461,23 @@ class Text:
             match = result._execute_operations()
             if match:
                 x, y = self._get_middle_point(match)
+                restore_position = kwargs.get("restore_mouse_position", False)
+                original_position = None
+
+                if restore_position:
+                    original_position = self._finder.mouse.mouse.position
+
                 if action == "mouse_move":
                     self._finder.mouse.moveTo(x=x, y=y)
-                elif action == "double_click":
-                    # Move to position first
-                    self._finder.mouse.moveTo(x=x, y=y)
-                    # Use pynput for double click
-                    pynput.mouse.Controller().click(
-                        button=pynput.mouse.Button.left, count=2
-                    )
                 else:
-                    # For other click actions
+                    # For click actions
                     getattr(self._finder.mouse, action)(x=x, y=y, **kwargs)
+
+                if restore_position and original_position:
+                    time.sleep(kwargs.get("duration", 0))  # Wait for the click duration
+                    self._finder.mouse.moveTo(
+                        x=original_position[0], y=original_position[1]
+                    )
 
         return result
 
@@ -480,17 +485,48 @@ class Text:
         """Move the mouse to the matched text location."""
         return self._add_action("moveTo")
 
-    def click(self, duration: float = 0.5) -> "Text":
-        """Click on the matched text location."""
-        return self._add_action("click", duration=duration)
+    def click(
+        self, duration: float = 0.5, restore_mouse_position: bool = False
+    ) -> "Text":
+        """Click on the matched text location.
 
-    def right_click(self, duration: float = 0.5) -> "Text":
-        """Right click on the matched text location."""
-        return self._add_action("rightClick", duration=duration)
+        Args:
+            duration: How long to wait after clicking (in seconds)
+            restore_mouse_position: Whether to return the mouse to its original position after clicking
+        """
+        return self._add_action(
+            "click", duration=duration, restore_mouse_position=restore_mouse_position
+        )
 
-    def double_click(self, duration: float = 0.5) -> "Text":
-        """Double click on the matched text location."""
-        return self._add_action("doubleClick", duration=duration)
+    def right_click(
+        self, duration: float = 0.5, restore_mouse_position: bool = False
+    ) -> "Text":
+        """Right click on the matched text location.
+
+        Args:
+            duration: How long to wait after clicking (in seconds)
+            restore_mouse_position: Whether to return the mouse to its original position after clicking
+        """
+        return self._add_action(
+            "rightClick",
+            duration=duration,
+            restore_mouse_position=restore_mouse_position,
+        )
+
+    def double_click(
+        self, duration: float = 0.5, restore_mouse_position: bool = False
+    ) -> "Text":
+        """Double click on the matched text location.
+
+        Args:
+            duration: How long to wait after clicking (in seconds)
+            restore_mouse_position: Whether to return the mouse to its original position after clicking
+        """
+        return self._add_action(
+            "double_click",
+            duration=duration,
+            restore_mouse_position=restore_mouse_position,
+        )
 
     def draw(
         self,

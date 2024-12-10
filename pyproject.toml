@@ -1,6 +1,6 @@
 [project]
 name = "screenium"
-version = "0.1.1"
+version = "0.2.0"
 description = "Like Selenium, but for your entire screen. Find and interact with text anywhere using OCR."
 readme = "README.md"
 authors = [

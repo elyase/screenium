@@ -354,3 +354,40 @@ def test_substring_within_longer_text(ocr_result, search_text, expected_x):
     assert match["x"] == pytest.approx(
         expected_x, rel=0.01
     ), "X coordinate should be approximately correct"
+
+
+def test_click_restore_mouse_position(monkeypatch):
+    """Test that click actions can restore the mouse to its original position."""
+    original_position = (50, 50)
+    current_position = list(original_position)  # Track current position
+
+    class MockMouse:
+        @property
+        def position(self):
+            return current_position[0], current_position[1]
+
+    class MockMouseController:
+        def __init__(self):
+            self.mouse = MockMouse()
+
+        def moveTo(self, x, y):
+            current_position[0] = x
+            current_position[1] = y
+
+        def click(self, x=None, y=None, **kwargs):
+            if x is not None and y is not None:
+                self.moveTo(x, y)
+
+    finder = TextFinder()
+    finder.mouse = MockMouseController()
+    finder.results = [
+        {"text": "Click me", "x": 200, "y": 200, "width": 50, "height": 20}
+    ]
+
+    text = Text("Click me", finder=finder)
+    text.click(restore_mouse_position=True)
+
+    assert (
+        current_position[0],
+        current_position[1],
+    ) == original_position, "Mouse should return to original position after click"
